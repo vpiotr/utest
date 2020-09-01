@@ -44,11 +44,10 @@ void test_assert_throws() {
 
 void test_assert_throws_msg() {
     auto lambdaX = []() { throw std::exception(); };
-    auto lambdaY = []() { return 0; };
     UTEST_ASSERT_THROWS_MSG("Lambda execution throws", lambdaX);
 }
 
-int run_all_test() {
+int run_all_tests() {
     UTEST_PROLOG();
     UTEST_FUNC(assert_true);
     UTEST_FUNC(assert_false);
@@ -62,6 +61,6 @@ int run_all_test() {
 }
 
 int main() {
-    return run_all_test();
+    return run_all_tests();
 }
 

@@ -47,14 +47,14 @@ Example complete test runner:
         UTEST_ASSERT_EQUALS(a, 42);
     }
     
-    int run_all_test() {
+    int run_all_tests() {
         UTEST_PROLOG();
         UTEST_FUNC(assert_equals);
         UTEST_EPILOG();
     }
     
     int main() {
-        return run_all_test();
+        return run_all_tests();
     }
  
 See tests in "tests" subdirectory for details.
@@ -88,6 +88,18 @@ There are two ways of runner execution:
               1 - testUTest, (Failed)
         Errors while running CTest
         make: *** [Makefile:84: test] Error 8
+ 
+This second type of execution requires two things in CMakeList.txt:
+* in runner directory in CMakeList.txt add runner as a test:
+
+        ADD_TEST(testUTest, testUTest)
+
+* in main project directory (from where you want to execute tests) in CMakeList.txt add:
+
+        ENABLE_TESTING()
+        ADD_SUBDIRECTORY( tests )
+ 
+ where `tests` is a directory containing runner code.
  
 # License
 See LICENSE.txt
