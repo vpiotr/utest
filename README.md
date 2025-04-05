@@ -161,13 +161,13 @@ make: *** [Makefile:84: test] Error 8
 - `UTEST_EPILOG()` - Finalize and report test results
 - `UTEST_FUNC(name)` - Run a test function (function should be named `test_name`)
 - `UTEST_ASSERT_TRUE(condition)` - Assert that condition is true
-- `UTEST_ASSERT_TRUE_MSG(msg, condition)` - Assert that condition is true, with custom message
+- `UTEST_ASSERT_TRUE_MSG(condition, msg)` - Assert that condition is true, with custom message
 - `UTEST_ASSERT_FALSE(condition)` - Assert that condition is false
-- `UTEST_ASSERT_FALSE_MSG(msg, condition)` - Assert that condition is false, with custom message
+- `UTEST_ASSERT_FALSE_MSG(condition, msg)` - Assert that condition is false, with custom message
 - `UTEST_ASSERT_EQUALS(a, b)` - Assert that a equals b
-- `UTEST_ASSERT_EQUALS_MSG(msg, a, b)` - Assert that a equals b, with custom message
+- `UTEST_ASSERT_EQUALS_MSG(a, b, msg)` - Assert that a equals b, with custom message
 - `UTEST_ASSERT_THROWS(F)` - Assert that function F throws an exception
-- `UTEST_ASSERT_THROWS_MSG(MSG, F)` - Assert that function F throws an exception, with custom message
+- `UTEST_ASSERT_THROWS_MSG(F, MSG)` - Assert that function F throws an exception, with custom message
 
 # License
 See LICENSE.txt

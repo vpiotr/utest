@@ -15,12 +15,12 @@ void test_basic_assertions() {
     UTEST_ASSERT_FALSE(a != b);
     
     // Test with messages
-    UTEST_ASSERT_TRUE_MSG("a should equal 5", a == 5);
-    UTEST_ASSERT_FALSE_MSG("a should not equal 6", a == 6);
+    UTEST_ASSERT_TRUE_MSG(a == 5, "a should equal 5");
+    UTEST_ASSERT_FALSE_MSG(a == 6, "a should not equal 6");
     
     std::string s1 = "hello";
     std::string s2 = "hello";
-    UTEST_ASSERT_EQUALS_MSG("Strings should match", s1, s2);
+    UTEST_ASSERT_EQUALS_MSG(s1, s2, "Strings should match");
 }
 
 // Test case with failure
@@ -38,7 +38,7 @@ void test_exception_assertions() {
     
     // Test with message
     auto throwFunc = []() { throw std::out_of_range("Index out of range"); };
-    UTEST_ASSERT_THROWS_MSG("Function should throw an exception", throwFunc);
+    UTEST_ASSERT_THROWS_MSG(throwFunc, "Function should throw an exception");
     
     // This would fail if the function didn't throw
     UTEST_ASSERT_THROWS([]() {

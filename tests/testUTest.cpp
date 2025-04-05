@@ -20,12 +20,12 @@ void test_assert_false() {
 
 void test_assert_true_msg() {
     int a{42};
-    UTEST_ASSERT_TRUE_MSG("a should be equal to 42", a == 42);
+    UTEST_ASSERT_TRUE_MSG(a == 42, "a should be equal to 42");
 }
 
 void test_assert_false_msg() {
     int a{42};
-    UTEST_ASSERT_FALSE_MSG("a should be different than 35", a == 35);
+    UTEST_ASSERT_FALSE_MSG(a == 35, "a should be different than 35");
 }
 
 void test_assert_equals() {
@@ -35,7 +35,7 @@ void test_assert_equals() {
 
 void test_assert_equals_msg() {
     int a{42};
-    UTEST_ASSERT_EQUALS_MSG("a should be equal to 42", a, 42);
+    UTEST_ASSERT_EQUALS_MSG(a, 42, "a should be equal to 42");
 }
 
 void test_assert_throws() {
@@ -44,7 +44,7 @@ void test_assert_throws() {
 
 void test_assert_throws_msg() {
     auto lambdaX = []() { throw std::exception(); };
-    UTEST_ASSERT_THROWS_MSG("Lambda execution throws", lambdaX);
+    UTEST_ASSERT_THROWS_MSG(lambdaX, "Lambda execution throws");
 }
 
 int run_all_tests() {

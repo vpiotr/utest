@@ -33,7 +33,7 @@ namespace utest {
   }                                                                 \
 }
 
-#define UTEST_ASSERT_TRUE_MSG( msg, condition )                             \
+#define UTEST_ASSERT_TRUE_MSG( condition, msg )                             \
 {                                                                   \
   if( !( condition ) )                                              \
   {                                                                 \
@@ -65,7 +65,7 @@ namespace utest {
   }                                                                 \
 }
 
-#define UTEST_ASSERT_FALSE_MSG( msg, condition )         \
+#define UTEST_ASSERT_FALSE_MSG( condition, msg )         \
 {                                                                   \
   if( ( condition ) )                                               \
   {                                                                 \
@@ -100,7 +100,7 @@ namespace utest {
   }                                                                 \
 }
 
-#define UTEST_ASSERT_EQUALS_MSG( msg, x, y )                             \
+#define UTEST_ASSERT_EQUALS_MSG( x, y, msg )                             \
 {                                                                   \
   if( ( x ) != ( y ) )                                              \
   {                                                                 \
@@ -155,7 +155,7 @@ namespace details {
 
 #define UTEST_ASSERT_THROWS(F) utest::details::AssertThrows(F)
 
-#define UTEST_ASSERT_THROWS_MSG(MSG, F) utest::details::AssertThrows(F, std::string(MSG))
+#define UTEST_ASSERT_THROWS_MSG(F, MSG) utest::details::AssertThrows(F, std::string(MSG))
 
 #define UTEST_FUNC(a) utest::details::testFunc(#a, test_##a, errorFound)
 
