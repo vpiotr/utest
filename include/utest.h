@@ -16,6 +16,41 @@
 
 namespace utest {
 
+// Custom exception class for assertion failures
+class AssertionException : public std::runtime_error {
+public:
+    explicit AssertionException(const std::string& message) 
+        : std::runtime_error(message), 
+          file_("unknown"), 
+          line_(0), 
+          function_("unknown") {}
+    
+    AssertionException(const std::string& message, const std::string& file, 
+                      int line, const std::string& function)
+        : std::runtime_error(message), 
+          file_(file), 
+          line_(line), 
+          function_(function) {}
+    
+    virtual ~AssertionException() = default;
+    
+    const std::string& getFile() const { return file_; }
+    int getLine() const { return line_; }
+    const std::string& getFunction() const { return function_; }
+    
+    // Format a complete error message
+    std::string getFormattedMessage() const {
+        std::ostringstream ss;
+        ss << what() << " at " << file_ << ":" << line_ << " in " << function_;
+        return ss.str();
+    }
+    
+protected:
+    std::string file_;
+    int line_;
+    std::string function_;
+};
+
 // Forward declarations for string handling
 namespace details {
     template<typename T>
@@ -41,10 +76,8 @@ namespace details {
   if( !( condition ) )                                              \
   {                                                                 \
     std::ostringstream ss;                                          \
-    ss << "condition is false: '" << (#condition) << "' at "        \
-       << __FILE__ << ":" << __LINE__                               \
-       << " in " << __PRETTY_FUNCTION__;                            \
-    throw std::runtime_error(ss.str());                             \
+    ss << "condition is false: '" << (#condition) << "'";           \
+    throw utest::AssertionException(ss.str(), __FILE__, __LINE__, __PRETTY_FUNCTION__); \
   }                                                                 \
 }
 
@@ -53,10 +86,8 @@ namespace details {
   if( !( condition ) )                                              \
   {                                                                 \
     std::ostringstream ss;                                          \
-    ss << "assertion failed, '" << msg << "' at "                   \
-       << __FILE__ << ":" << __LINE__                               \
-       << " in " << __PRETTY_FUNCTION__;                            \
-    throw std::runtime_error(ss.str());                             \
+    ss << "assertion failed, '" << msg << "'";                      \
+    throw utest::AssertionException(ss.str(), __FILE__, __LINE__, __PRETTY_FUNCTION__); \
   }                                                                 \
 }
 
@@ -65,10 +96,8 @@ namespace details {
   if( ( condition ) )                                               \
   {                                                                 \
     std::ostringstream ss;                                          \
-    ss << "condition is true: '" << (#condition) << "' at "         \
-       << __FILE__ << ":" << __LINE__                               \
-       << " in " << __PRETTY_FUNCTION__;                            \
-    throw std::runtime_error(ss.str());                             \
+    ss << "condition is true: '" << (#condition) << "'";            \
+    throw utest::AssertionException(ss.str(), __FILE__, __LINE__, __PRETTY_FUNCTION__); \
   }                                                                 \
 }
 
@@ -77,10 +106,8 @@ namespace details {
   if( ( condition ) )                                               \
   {                                                                 \
     std::ostringstream ss;                                          \
-    ss << "assertion failed, '" << msg << "' at "                   \
-       << __FILE__ << ":" << __LINE__                               \
-       << " in " << __PRETTY_FUNCTION__;                            \
-    throw std::runtime_error(ss.str());                             \
+    ss << "assertion failed, '" << msg << "'";                      \
+    throw utest::AssertionException(ss.str(), __FILE__, __LINE__, __PRETTY_FUNCTION__); \
   }                                                                 \
 }
 
@@ -89,12 +116,9 @@ namespace details {
   if( ( x ) != ( y ) )                                              \
   {                                                                 \
     std::ostringstream ss;                                          \
-    ss << "Assertion failed, at "                                   \
-       << __FILE__ << ":" << __LINE__                               \
-       << " in " << __PRETTY_FUNCTION__                             \
-       << ": " << UTEST_TO_STRING( ( x ) )                          \
+    ss << "Assertion failed: " << UTEST_TO_STRING( ( x ) )          \
        << " != " << UTEST_TO_STRING( ( y ) );                       \
-    throw std::runtime_error(ss.str());                             \
+    throw utest::AssertionException(ss.str(), __FILE__, __LINE__, __PRETTY_FUNCTION__); \
   }                                                                 \
 }
 
@@ -103,12 +127,9 @@ namespace details {
   if( ( x ) != ( y ) )                                              \
   {                                                                 \
     std::ostringstream ss;                                          \
-    ss << "Assertion failed, '" << msg << "' at "                   \
-       << __FILE__ << ":" << __LINE__                               \
-       << " in " << __PRETTY_FUNCTION__                             \
-       << ": " << UTEST_TO_STRING( ( x ) )                          \
-       << " != " << UTEST_TO_STRING( ( y ) );                       \
-    throw std::runtime_error(ss.str());                             \
+    ss << "Assertion failed, '" << msg << "': "                     \
+       << UTEST_TO_STRING( ( x ) ) << " != " << UTEST_TO_STRING( ( y ) ); \
+    throw utest::AssertionException(ss.str(), __FILE__, __LINE__, __PRETTY_FUNCTION__); \
   }                                                                 \
 }
 
@@ -117,11 +138,8 @@ namespace details {
   if( ( ptr ) != nullptr )                                          \
   {                                                                 \
     std::ostringstream ss;                                          \
-    ss << "Assertion failed, pointer is not null at "               \
-       << __FILE__ << ":" << __LINE__                               \
-       << " in " << __PRETTY_FUNCTION__                             \
-       << ": " << (#ptr);                                           \
-    throw std::runtime_error(ss.str());                             \
+    ss << "Assertion failed, pointer is not null: " << (#ptr);      \
+    throw utest::AssertionException(ss.str(), __FILE__, __LINE__, __PRETTY_FUNCTION__); \
   }                                                                 \
 }
 
@@ -130,10 +148,8 @@ namespace details {
   if( ( ptr ) == nullptr )                                          \
   {                                                                 \
     std::ostringstream ss;                                          \
-    ss << "Assertion failed, pointer is null: '" << (#ptr) << "' at " \
-       << __FILE__ << ":" << __LINE__                               \
-       << " in " << __PRETTY_FUNCTION__;                            \
-    throw std::runtime_error(ss.str());                             \
+    ss << "Assertion failed, pointer is null: '" << (#ptr) << "'";  \
+    throw utest::AssertionException(ss.str(), __FILE__, __LINE__, __PRETTY_FUNCTION__); \
   }                                                                 \
 }
 
@@ -145,8 +161,12 @@ namespace details {
             f();
             std::cout << "OK: Test [" << std::string(name) << "] " << "succeeded\n";
         }
+        catch (const AssertionException &e) {
+            std::cout << "Error: Test [" << std::string(name) << "] failed!, error: " << e.getFormattedMessage() << "\n";
+            failed = true;
+        }
         catch (std::exception &e) {
-            std::cout << "Error: Test [" << std::string(name) << "] failed!, error: " << e.what() << "\n";
+            std::cout << "Error: Test [" << std::string(name) << "] failed with unexpected exception!, error: " << e.what() << "\n";
             failed = true;
         }
     }
@@ -165,9 +185,9 @@ namespace details {
             if (msg.size() > 0) {
                 std::ostringstream ss;
                 ss << "assertion.throws = [" << msg << "]";
-                throw std::runtime_error(ss.str());
+                throw utest::AssertionException(ss.str());
             } else {
-                throw std::runtime_error("assertion.throws failed");
+                throw utest::AssertionException("assertion.throws failed");
             }
         }
     }
