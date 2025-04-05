@@ -168,6 +168,8 @@ make: *** [Makefile:84: test] Error 8
 - `UTEST_ASSERT_EQUALS_MSG(a, b, msg)` - Assert that a equals b, with custom message
 - `UTEST_ASSERT_THROWS(F)` - Assert that function F throws an exception
 - `UTEST_ASSERT_THROWS_MSG(F, MSG)` - Assert that function F throws an exception, with custom message
+- `UTEST_ASSERT_NULL(ptr)` - Assert that pointer ptr is null
+- `UTEST_ASSERT_NOT_NULL(ptr)` - Assert that pointer ptr is not null
 
 # License
 See LICENSE.txt

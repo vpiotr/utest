@@ -47,6 +47,17 @@ void test_assert_throws_msg() {
     UTEST_ASSERT_THROWS_MSG(lambdaX, "Lambda execution throws");
 }
 
+void test_assert_null() {
+    int* null_ptr = nullptr;
+    UTEST_ASSERT_NULL(null_ptr);
+}
+
+void test_assert_not_null() {
+    int x = 42;
+    int* ptr = &x;
+    UTEST_ASSERT_NOT_NULL(ptr);
+}
+
 int run_all_tests() {
     UTEST_PROLOG();
     UTEST_FUNC(assert_true);
@@ -57,6 +68,8 @@ int run_all_tests() {
     UTEST_FUNC(assert_equals_msg);
     UTEST_FUNC(assert_throws);
     UTEST_FUNC(assert_throws_msg);
+    UTEST_FUNC(assert_null);
+    UTEST_FUNC(assert_not_null);
     UTEST_EPILOG();
 }
 

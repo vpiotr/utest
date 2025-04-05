@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <string>
 #include <iostream>
+#include <sstream>
 
 namespace utest {
 
@@ -39,102 +40,100 @@ namespace details {
 {                                                                   \
   if( !( condition ) )                                              \
   {                                                                 \
-    throw std::runtime_error( std::string("condition is false: '")   \
-                              + std::string((#condition))           \
-                              + std::string("' at ")                 \
-                              + std::string( __FILE__ )             \
-                              + std::string( ":" )                  \
-                              + std::to_string( __LINE__ )          \
-                              + std::string( " in " )               \
-                              + std::string( __PRETTY_FUNCTION__ )  \
-    );                                                              \
+    std::ostringstream ss;                                          \
+    ss << "condition is false: '" << (#condition) << "' at "        \
+       << __FILE__ << ":" << __LINE__                               \
+       << " in " << __PRETTY_FUNCTION__;                            \
+    throw std::runtime_error(ss.str());                             \
   }                                                                 \
 }
 
-#define UTEST_ASSERT_TRUE_MSG( condition, msg )                             \
+#define UTEST_ASSERT_TRUE_MSG( condition, msg )                    \
 {                                                                   \
   if( !( condition ) )                                              \
   {                                                                 \
-    throw std::runtime_error( std::string("assertion failed, '")     \
-                              + std::string(msg)                    \
-                              + std::string("' at ")                 \
-                              + std::string( __FILE__ )             \
-                              + std::string( ":" )                  \
-                              + std::to_string( __LINE__ )          \
-                              + std::string( " in " )               \
-                              + std::string( __PRETTY_FUNCTION__ )  \
-    );                                                              \
+    std::ostringstream ss;                                          \
+    ss << "assertion failed, '" << msg << "' at "                   \
+       << __FILE__ << ":" << __LINE__                               \
+       << " in " << __PRETTY_FUNCTION__;                            \
+    throw std::runtime_error(ss.str());                             \
   }                                                                 \
 }
 
-#define UTEST_ASSERT_FALSE( condition )    \
-{                                                                   \
-  if( ( condition ) )                                              \
-  {                                                                 \
-    throw std::runtime_error( std::string("condition is true: '")   \
-                              + std::string((#condition))           \
-                              + std::string("' at ")                 \
-                              + std::string( __FILE__ )             \
-                              + std::string( ":" )                  \
-                              + std::to_string( __LINE__ )          \
-                              + std::string( " in " )               \
-                              + std::string( __PRETTY_FUNCTION__ )  \
-    );                                                              \
-  }                                                                 \
-}
-
-#define UTEST_ASSERT_FALSE_MSG( condition, msg )         \
+#define UTEST_ASSERT_FALSE( condition )                            \
 {                                                                   \
   if( ( condition ) )                                               \
   {                                                                 \
-    throw std::runtime_error( std::string("assertion failed, '")    \
-                              + std::string(msg)                    \
-                              + std::string("' at ")                \
-                              + std::string( __FILE__ )             \
-                              + std::string( ":" )                  \
-                              + std::to_string( __LINE__ )          \
-                              + std::string( " in " )               \
-                              + std::string( __PRETTY_FUNCTION__ )  \
-    );                                                              \
+    std::ostringstream ss;                                          \
+    ss << "condition is true: '" << (#condition) << "' at "         \
+       << __FILE__ << ":" << __LINE__                               \
+       << " in " << __PRETTY_FUNCTION__;                            \
+    throw std::runtime_error(ss.str());                             \
   }                                                                 \
 }
 
-#define UTEST_ASSERT_EQUALS( x, y )                                  \
+#define UTEST_ASSERT_FALSE_MSG( condition, msg )                   \
 {                                                                   \
-  if( ( x ) != ( y ) )                                              \
+  if( ( condition ) )                                               \
   {                                                                 \
-    throw std::runtime_error( std::string("Assertion failed, ")     \
-                              + std::string(" at ")                 \
-                              + std::string( __FILE__ )             \
-                              + std::string( ":" )                  \
-                              + std::to_string( __LINE__ )          \
-                              + std::string( " in " )               \
-                              + std::string( __PRETTY_FUNCTION__ )  \
-                              + std::string( ": " )                 \
-                              + UTEST_TO_STRING( ( x ) )            \
-                              + std::string( " != " )               \
-                              + UTEST_TO_STRING( ( y ) )            \
-    );                                                              \
+    std::ostringstream ss;                                          \
+    ss << "assertion failed, '" << msg << "' at "                   \
+       << __FILE__ << ":" << __LINE__                               \
+       << " in " << __PRETTY_FUNCTION__;                            \
+    throw std::runtime_error(ss.str());                             \
   }                                                                 \
 }
 
-#define UTEST_ASSERT_EQUALS_MSG( x, y, msg )                             \
+#define UTEST_ASSERT_EQUALS( x, y )                                \
 {                                                                   \
   if( ( x ) != ( y ) )                                              \
   {                                                                 \
-    throw std::runtime_error( std::string("Assertion failed, '")     \
-                              + std::string(msg)                    \
-                              + std::string("' at ")                 \
-                              + std::string( __FILE__ )             \
-                              + std::string( ":" )                  \
-                              + std::to_string( __LINE__ )          \
-                              + std::string( " in " )               \
-                              + std::string( __PRETTY_FUNCTION__ )  \
-                              + std::string( ": " )                 \
-                              + UTEST_TO_STRING( ( x ) )            \
-                              + std::string( " != " )               \
-                              + UTEST_TO_STRING( ( y ) )            \
-    );                                                              \
+    std::ostringstream ss;                                          \
+    ss << "Assertion failed, at "                                   \
+       << __FILE__ << ":" << __LINE__                               \
+       << " in " << __PRETTY_FUNCTION__                             \
+       << ": " << UTEST_TO_STRING( ( x ) )                          \
+       << " != " << UTEST_TO_STRING( ( y ) );                       \
+    throw std::runtime_error(ss.str());                             \
+  }                                                                 \
+}
+
+#define UTEST_ASSERT_EQUALS_MSG( x, y, msg )                       \
+{                                                                   \
+  if( ( x ) != ( y ) )                                              \
+  {                                                                 \
+    std::ostringstream ss;                                          \
+    ss << "Assertion failed, '" << msg << "' at "                   \
+       << __FILE__ << ":" << __LINE__                               \
+       << " in " << __PRETTY_FUNCTION__                             \
+       << ": " << UTEST_TO_STRING( ( x ) )                          \
+       << " != " << UTEST_TO_STRING( ( y ) );                       \
+    throw std::runtime_error(ss.str());                             \
+  }                                                                 \
+}
+
+#define UTEST_ASSERT_NULL( ptr )                                   \
+{                                                                   \
+  if( ( ptr ) != nullptr )                                          \
+  {                                                                 \
+    std::ostringstream ss;                                          \
+    ss << "Assertion failed, pointer is not null at "               \
+       << __FILE__ << ":" << __LINE__                               \
+       << " in " << __PRETTY_FUNCTION__                             \
+       << ": " << (#ptr);                                           \
+    throw std::runtime_error(ss.str());                             \
+  }                                                                 \
+}
+
+#define UTEST_ASSERT_NOT_NULL( ptr )                               \
+{                                                                   \
+  if( ( ptr ) == nullptr )                                          \
+  {                                                                 \
+    std::ostringstream ss;                                          \
+    ss << "Assertion failed, pointer is null: '" << (#ptr) << "' at " \
+       << __FILE__ << ":" << __LINE__                               \
+       << " in " << __PRETTY_FUNCTION__;                            \
+    throw std::runtime_error(ss.str());                             \
   }                                                                 \
 }
 
@@ -163,10 +162,13 @@ namespace details {
         }
 
         if (!throwFound) {
-            if (msg.size() > 0)
-                throw std::runtime_error(std::string("assertion.throws = [") + msg + "]");
-            else
+            if (msg.size() > 0) {
+                std::ostringstream ss;
+                ss << "assertion.throws = [" << msg << "]";
+                throw std::runtime_error(ss.str());
+            } else {
                 throw std::runtime_error("assertion.throws failed");
+            }
         }
     }
 } // namespace

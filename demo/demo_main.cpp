@@ -68,6 +68,27 @@ void test_complex_scenario() {
     UTEST_ASSERT_TRUE(sum > 100);
 }
 
+// Demonstration of pointer assertions
+void test_pointer_assertions() {
+    // Test null pointer
+    int* null_ptr = nullptr;
+    UTEST_ASSERT_NULL(null_ptr);
+    
+    // Test non-null pointer
+    int x = 42;
+    int* ptr = &x;
+    UTEST_ASSERT_NOT_NULL(ptr);
+    
+    // Test with memory allocation
+    std::string* dynamic_string = new std::string("hello");
+    UTEST_ASSERT_NOT_NULL(dynamic_string);
+    
+    // Clean up
+    delete dynamic_string;
+    dynamic_string = nullptr;
+    UTEST_ASSERT_NULL(dynamic_string);
+}
+
 int main() {
     std::cout << "======================================\n";
     std::cout << "utest library demonstration\n";
@@ -85,6 +106,9 @@ int main() {
     
     std::cout << "\nRunning exception assertions test...\n";
     UTEST_FUNC(exception_assertions);
+    
+    std::cout << "\nRunning pointer assertions test...\n";
+    UTEST_FUNC(pointer_assertions);
     
     std::cout << "\nRunning intentionally failing test...\n";
     UTEST_FUNC(failing_assertion);
