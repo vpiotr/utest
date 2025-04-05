@@ -7,4 +7,7 @@ add_executable(testUTest
         ../include/utest.h
         testUTest.cpp)
 
+# Add include directory
+target_include_directories(testUTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
 ADD_TEST(testUTest, testUTest)

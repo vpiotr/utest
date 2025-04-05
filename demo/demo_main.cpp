@@ -41,10 +41,11 @@ void test_exception_assertions() {
     UTEST_ASSERT_THROWS_MSG(throwFunc, "Function should throw an exception");
     
     // This would fail if the function didn't throw
-    UTEST_ASSERT_THROWS([]() {
+    auto indexOutOfRangeFunc = []() {
         std::vector<int> v{1, 2, 3};
         return v.at(10); // This will throw std::out_of_range
-    });
+    };
+    UTEST_ASSERT_THROWS(indexOutOfRangeFunc);
 }
 
 // Demonstration of a complex test
