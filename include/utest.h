@@ -15,7 +15,25 @@
 
 namespace utest {
 
-#define UTEST_TO_STRING( x ) std::to_string( ( x ) )
+// Forward declarations for string handling
+namespace details {
+    template<typename T>
+    inline std::string convertToString(const T& value) {
+        return std::to_string(value);
+    }
+    
+    // Specialization for std::string
+    inline std::string convertToString(const std::string& value) {
+        return value;
+    }
+    
+    // Specialization for const char*
+    inline std::string convertToString(const char* value) {
+        return std::string(value);
+    }
+}
+
+#define UTEST_TO_STRING( x ) utest::details::convertToString( ( x ) )
 
 #define UTEST_ASSERT_TRUE( condition )                             \
 {                                                                   \
