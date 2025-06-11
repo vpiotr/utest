@@ -160,6 +160,7 @@ make: *** [Makefile:84: test] Error 8
 - `UTEST_PROLOG()` - Initialize the test framework
 - `UTEST_EPILOG()` - Finalize and report test results
 - `UTEST_FUNC(name)` - Run a test function (function should be named `test_name`)
+- `UTEST_ALLOW_EMPTY_TESTS()` - Allow test runner to succeed even when no tests are run
 - `UTEST_ASSERT_TRUE(condition)` - Assert that condition is true
 - `UTEST_ASSERT_TRUE_MSG(condition, msg)` - Assert that condition is true, with custom message
 - `UTEST_ASSERT_FALSE(condition)` - Assert that condition is false
@@ -168,8 +169,33 @@ make: *** [Makefile:84: test] Error 8
 - `UTEST_ASSERT_EQUALS_MSG(a, b, msg)` - Assert that a equals b, with custom message
 - `UTEST_ASSERT_THROWS(F)` - Assert that function F throws an exception
 - `UTEST_ASSERT_THROWS_MSG(F, MSG)` - Assert that function F throws an exception, with custom message
+- `UTEST_ASSERT_DOES_NOT_THROW(F)` - Assert that function F does not throw an exception
+- `UTEST_ASSERT_DOES_NOT_THROW_MSG(F, MSG)` - Assert that function F does not throw an exception, with custom message
 - `UTEST_ASSERT_NULL(ptr)` - Assert that pointer ptr is null
 - `UTEST_ASSERT_NOT_NULL(ptr)` - Assert that pointer ptr is not null
+
+## Build Organization
+
+The build system now organizes binaries into dedicated subdirectories:
+- Main demo: `bin/utest_demo`
+- Additional demos: `bin/demo_with_failure`, `bin/demo_no_tests`
+- Tests: `bin/tests/test_*`
+
+## Handling No Tests Scenario
+
+By default, if no tests are run, the test framework will exit with failure. This can be changed using:
+
+```cpp
+UTEST_PROLOG();
+UTEST_ALLOW_EMPTY_TESTS(); // Allow success even with no tests
+// No test functions called here
+UTEST_EPILOG(); // Will return SUCCESS instead of FAILURE
+```
+
+This is useful for:
+- Conditional test execution
+- Test suites that may be empty under certain conditions
+- Template-based test generation where some configurations may produce no tests
 
 # License
 See LICENSE.txt

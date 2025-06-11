@@ -23,14 +23,6 @@ void test_basic_assertions() {
     UTEST_ASSERT_EQUALS_MSG(s1, s2, "Strings should match");
 }
 
-// Test case with failure
-void test_failing_assertion() {
-    int a = 5;
-    int b = 6;
-    // This will fail
-    UTEST_ASSERT_EQUALS(a, b);
-}
-
 // Test case with exception handling
 void test_exception_assertions() {
     // Test that an exception is thrown
@@ -109,9 +101,6 @@ int main() {
     
     std::cout << "\nRunning pointer assertions test...\n";
     UTEST_FUNC(pointer_assertions);
-    
-    std::cout << "\nRunning intentionally failing test...\n";
-    UTEST_FUNC(failing_assertion);
     
     // Report overall result
     std::cout << "\nTest summary:\n";

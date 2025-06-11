@@ -3,11 +3,80 @@ project(utest)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(testUTest
+# Core features test
+add_executable(test_core_features
         ../include/utest.h
-        testUTest.cpp)
+        test_core_features.cpp)
 
-# Add include directory
-target_include_directories(testUTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+target_include_directories(test_core_features PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
-ADD_TEST(testUTest, testUTest)
+set_target_properties(test_core_features PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
+)
+
+ADD_TEST(test_core_features, ${CMAKE_BINARY_DIR}/bin/tests/test_core_features)
+
+# Comprehensive features test
+add_executable(test_comprehensive_features
+        ../include/utest.h
+        test_comprehensive_features.cpp)
+
+target_include_directories(test_comprehensive_features PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+set_target_properties(test_comprehensive_features PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
+)
+
+ADD_TEST(test_comprehensive_features, ${CMAKE_BINARY_DIR}/bin/tests/test_comprehensive_features)
+
+# Edge cases test
+add_executable(test_edge_cases
+        ../include/utest.h
+        test_edge_cases.cpp)
+
+target_include_directories(test_edge_cases PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+set_target_properties(test_edge_cases PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
+)
+
+ADD_TEST(test_edge_cases, ${CMAKE_BINARY_DIR}/bin/tests/test_edge_cases)
+
+# Enhanced features test
+add_executable(test_enhanced_features
+        ../include/utest.h
+        test_enhanced_features.cpp)
+
+target_include_directories(test_enhanced_features PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+set_target_properties(test_enhanced_features PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
+)
+
+ADD_TEST(test_enhanced_features, ${CMAKE_BINARY_DIR}/bin/tests/test_enhanced_features)
+
+# Todo verification test
+add_executable(test_todo_verification
+        ../include/utest.h
+        test_todo_verification.cpp)
+
+target_include_directories(test_todo_verification PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+set_target_properties(test_todo_verification PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
+)
+
+ADD_TEST(test_todo_verification, ${CMAKE_BINARY_DIR}/bin/tests/test_todo_verification)
+
+# No tests scenario test (should fail by design)
+add_executable(test_no_tests
+        ../include/utest.h
+        test_no_tests.cpp)
+
+target_include_directories(test_no_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+set_target_properties(test_no_tests PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
+)
+
+# Note: test_no_tests is expected to fail, so we don't add it to CTest
