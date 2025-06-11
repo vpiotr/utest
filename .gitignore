@@ -4,6 +4,8 @@ build/
 cmake-build-*/
 CMakeFiles/
 bin/
+docs/
+latex/
 
 # Generated files
 CMakeCache.txt

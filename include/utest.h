@@ -1,12 +1,72 @@
 #ifndef __UTEST_H__
 #define __UTEST_H__
 
-//----------------------------------------------------------------------------------
-// Name:        utest.h
-// Purpose:     Unit testing library
-// Author:      Piotr Likus
-// Created:     31/08/2020
-//----------------------------------------------------------------------------------
+/**
+ * @file utest.h
+ * @brief Simple and lightweight C++ unit testing library
+ * @author Piotr Likus
+ * @date 31/08/2020
+ * 
+ * @mainpage utest - Simple C++ Unit Testing Library
+ * 
+ * @section introduction Introduction
+ * 
+ * utest is a simple, lightweight, header-only C++ unit testing library that provides
+ * essential testing functionality without external dependencies. It supports:
+ * 
+ * - Simple assertion macros for common test cases
+ * - Test grouping and organization
+ * - Performance timing for each test
+ * - Unicode and ASCII checkmarks for test results
+ * - Exception testing (throw/no-throw assertions)
+ * - String and numeric comparisons
+ * - Comprehensive test reporting
+ * 
+ * @section usage_sec Basic Usage
+ * 
+ * @code{.cpp}
+ * #include "utest.h"
+ * 
+ * // Define test functions
+ * UTEST_FUNC_DEF(BasicMath) {
+ *     UTEST_ASSERT_EQUALS(2 + 2, 4);
+ *     UTEST_ASSERT_GT(5, 3);
+ * }
+ * 
+ * UTEST_FUNC_DEF2(Calculator, Addition) {
+ *     UTEST_ASSERT_EQUALS(add(2, 3), 5);
+ * }
+ * 
+ * int main() {
+ *     UTEST_PROLOG();
+ *     
+ *     UTEST_FUNC(BasicMath);
+ *     UTEST_FUNC2(Calculator, Addition);
+ *     
+ *     UTEST_EPILOG();
+ * }
+ * @endcode
+ * 
+ * @section features_sec Features
+ * 
+ * - **Header-only**: Just include utest.h and start testing
+ * - **No dependencies**: Works with standard C++ library only
+ * - **Performance timing**: Built-in microsecond precision timing
+ * - **Test grouping**: Organize related tests together
+ * - **Rich assertions**: Support for various data types and conditions
+ * - **Exception testing**: Test for expected exceptions or their absence
+ * - **Flexible output**: ASCII or Unicode checkmarks, configurable verbosity
+ * 
+ * @section config_sec Configuration
+ * 
+ * The library can be configured using these macros in your test main():
+ * - UTEST_USE_ASCII_CHECKMARKS() - Use [OK]/[FAIL] instead of checkmarks
+ * - UTEST_SHOW_PERFORMANCE() - Show timing information for each test
+ * - UTEST_ALLOW_EMPTY_TESTS() - Don't fail if no tests are run
+ * 
+ * By default, ASCII checkmarks and performance timing are enabled for
+ * better compatibility and useful debugging information.
+ */
 
 #include <cstdlib>
 #include <stdexcept>
@@ -19,29 +79,50 @@
 #include <chrono>
 #include <map>
 #include <iomanip>
-#include <iomanip>
 
 namespace utest {
 
-#define UTEST_FUNC(a) utest::details::testFunc(#a, test_##a, errorFound)
+/**
+ * @defgroup exceptions Test Exceptions
+ * @brief Exception classes for test failures
+ * @{
+ */
 
-#define UTEST_PROLOG() bool errorFound = false; \
-    utest::details::getTestResults().clear()
-
-#define UTEST_ALLOW_EMPTY_TESTS() utest::details::getAllowEmptyTests() = true
-
-#define UTEST_USE_ASCII_CHECKMARKS() utest::details::getUseAsciiCheckmarks() = true
-
-#define UTEST_SHOW_PERFORMANCE() utest::details::getShowPerformanceInfo() = true
-
+/**
+ * @brief Exception thrown when an assertion fails
+ * 
+ * This exception provides detailed information about assertion failures,
+ * including the source file, line number, and function where the failure occurred.
+ * Used internally by assertion macros and can be caught in user code
+ * for detailed error reporting.
+ * 
+ * @code{.cpp}
+ * try {
+ *     UTEST_ASSERT_TRUE(false);  // Will throw AssertionException
+ * } catch (const utest::AssertionException& e) {
+ *     std::cout << e.getFormattedMessage() << std::endl;
+ * }
+ * @endcode
+ */
 class AssertionException : public std::runtime_error {
 public:
+    /**
+     * @brief Construct with simple message
+     * @param message Error description
+     */
     explicit AssertionException(const std::string& message) 
         : std::runtime_error(message), 
           file_("unknown"), 
           line_(0), 
           function_("unknown") {}
     
+    /**
+     * @brief Construct with full location information
+     * @param message Error description
+     * @param file Source file name
+     * @param line Line number
+     * @param function Function name
+     */
     AssertionException(const std::string& message, const std::string& file, 
                       int line, const std::string& function)
         : std::runtime_error(message), 
@@ -51,11 +132,35 @@ public:
     
     virtual ~AssertionException() = default;
     
+    /**
+     * @brief Get the source file where the assertion failed
+     * @return Source file name
+     */
     const std::string& getFile() const { return file_; }
+    
+    /**
+     * @brief Get the line number where the assertion failed
+     * @return Line number
+     */
     int getLine() const { return line_; }
+    
+    /**
+     * @brief Get the function name where the assertion failed
+     * @return Function name
+     */
     const std::string& getFunction() const { return function_; }
     
-    // Format a complete error message
+    /**
+     * @brief Get a complete formatted error message with location
+     * @return Formatted error message including file, line, and function
+     * 
+     * @code{.cpp}
+     * catch (const utest::AssertionException& e) {
+     *     std::cout << e.getFormattedMessage() << std::endl;
+     *     // Output: "Assertion failed at file.cpp:42 in test_function"
+     * }
+     * @endcode
+     */
     std::string getFormattedMessage() const {
         std::ostringstream ss;
         ss << what() << " at " << file_ << ":" << line_ << " in " << function_;
@@ -63,10 +168,12 @@ public:
     }
     
 protected:
-    std::string file_;
-    int line_;
-    std::string function_;
+    std::string file_;      ///< Source file name
+    int line_;              ///< Line number
+    std::string function_;  ///< Function name
 };
+
+/** @} */ // end of exceptions group
 
 // Forward declarations for string handling
 namespace details {
@@ -137,8 +244,33 @@ namespace details {
     }
 }
 
+/**
+ * @defgroup assertions Assertion Macros
+ * @brief Macros for testing conditions and values
+ * @{
+ */
+
+/**
+ * @brief Convert a value to string representation for error messages
+ * @param x Value to convert
+ * @return String representation of the value
+ * 
+ * This macro uses SFINAE to automatically detect the best way to convert
+ * a value to string, supporting standard types and custom streamable types.
+ */
 #define UTEST_TO_STRING( x ) utest::details::convertToString( ( x ) )
 
+/**
+ * @brief Assert that a condition is true
+ * @param condition Boolean expression to test
+ * 
+ * Throws AssertionException if the condition evaluates to false.
+ * 
+ * @code{.cpp}
+ * UTEST_ASSERT_TRUE(value > 0);
+ * UTEST_ASSERT_TRUE(ptr != nullptr);
+ * @endcode
+ */
 #define UTEST_ASSERT_TRUE( condition )                             \
 {                                                                   \
   if( !( condition ) )                                              \
@@ -149,6 +281,17 @@ namespace details {
   }                                                                 \
 }
 
+/**
+ * @brief Assert that a condition is true with custom message
+ * @param condition Boolean expression to test
+ * @param msg Custom error message
+ * 
+ * Like UTEST_ASSERT_TRUE but with a custom error message.
+ * 
+ * @code{.cpp}
+ * UTEST_ASSERT_TRUE_MSG(value > 0, "Value must be positive");
+ * @endcode
+ */
 #define UTEST_ASSERT_TRUE_MSG( condition, msg )                    \
 {                                                                   \
   if( !( condition ) )                                              \
@@ -159,6 +302,17 @@ namespace details {
   }                                                                 \
 }
 
+/**
+ * @brief Assert that a condition is false
+ * @param condition Boolean expression to test
+ * 
+ * Throws AssertionException if the condition evaluates to true.
+ * 
+ * @code{.cpp}
+ * UTEST_ASSERT_FALSE(value == 0);
+ * UTEST_ASSERT_FALSE(list.empty());
+ * @endcode
+ */
 #define UTEST_ASSERT_FALSE( condition )                            \
 {                                                                   \
   if( ( condition ) )                                               \
@@ -169,6 +323,17 @@ namespace details {
   }                                                                 \
 }
 
+/**
+ * @brief Assert that a condition is false with custom message
+ * @param condition Boolean expression to test
+ * @param msg Custom error message
+ * 
+ * Like UTEST_ASSERT_FALSE but with a custom error message.
+ * 
+ * @code{.cpp}
+ * UTEST_ASSERT_FALSE_MSG(value == 0, "Value should not be zero");
+ * @endcode
+ */
 #define UTEST_ASSERT_FALSE_MSG( condition, msg )                   \
 {                                                                   \
   if( ( condition ) )                                               \
@@ -179,6 +344,19 @@ namespace details {
   }                                                                 \
 }
 
+/**
+ * @brief Assert that two values are equal
+ * @param x First value
+ * @param y Second value
+ * 
+ * Uses operator!= to compare values. Supports any type that can be
+ * converted to string for error messages.
+ * 
+ * @code{.cpp}
+ * UTEST_ASSERT_EQUALS(calculator.add(2, 3), 5);
+ * UTEST_ASSERT_EQUALS(std::string("hello"), "hello");
+ * @endcode
+ */
 #define UTEST_ASSERT_EQUALS( x, y )                                \
 {                                                                   \
   if( ( x ) != ( y ) )                                              \
@@ -190,6 +368,18 @@ namespace details {
   }                                                                 \
 }
 
+/**
+ * @brief Assert that two values are equal with custom message
+ * @param x First value
+ * @param y Second value
+ * @param msg Custom error message
+ * 
+ * Like UTEST_ASSERT_EQUALS but with a custom error message.
+ * 
+ * @code{.cpp}
+ * UTEST_ASSERT_EQUALS_MSG(result, expected, "Calculation result mismatch");
+ * @endcode
+ */
 #define UTEST_ASSERT_EQUALS_MSG( x, y, msg )                       \
 {                                                                   \
   if( ( x ) != ( y ) )                                              \
@@ -201,6 +391,17 @@ namespace details {
   }                                                                 \
 }
 
+/**
+ * @brief Assert that a pointer is null
+ * @param ptr Pointer to test
+ * 
+ * Throws AssertionException if the pointer is not null.
+ * 
+ * @code{.cpp}
+ * UTEST_ASSERT_NULL(ptr);
+ * UTEST_ASSERT_NULL(object.getOptionalResource());
+ * @endcode
+ */
 #define UTEST_ASSERT_NULL( ptr )                                   \
 {                                                                   \
   if( ( ptr ) != nullptr )                                          \
@@ -211,6 +412,17 @@ namespace details {
   }                                                                 \
 }
 
+/**
+ * @brief Assert that a pointer is not null
+ * @param ptr Pointer to test
+ * 
+ * Throws AssertionException if the pointer is null.
+ * 
+ * @code{.cpp}
+ * UTEST_ASSERT_NOT_NULL(ptr);
+ * UTEST_ASSERT_NOT_NULL(factory.createObject());
+ * @endcode
+ */
 #define UTEST_ASSERT_NOT_NULL( ptr )                               \
 {                                                                   \
   if( ( ptr ) == nullptr )                                          \
@@ -403,11 +615,41 @@ namespace details {
   }                                                                 \
 }
 
-// Aliases for convenience
+/**
+ * @defgroup aliases Convenient Aliases
+ * @brief Short aliases for commonly used assertion macros
+ * @{
+ */
+
+/**
+ * @brief Short alias for UTEST_ASSERT_EQUALS
+ * @param x First value
+ * @param y Second value
+ */
 #define UTEST_ASSERT_EQ( x, y ) UTEST_ASSERT_EQUALS( x, y )
+
+/**
+ * @brief Short alias for UTEST_ASSERT_NOT_EQUALS
+ * @param x First value  
+ * @param y Second value
+ */
 #define UTEST_ASSERT_NEQ( x, y ) UTEST_ASSERT_NOT_EQUALS( x, y )
+
+/**
+ * @brief Short alias for UTEST_ASSERT_STR_EQUALS
+ * @param x First string
+ * @param y Second string
+ */
 #define UTEST_ASSERT_SEQ( x, y ) UTEST_ASSERT_STR_EQUALS( x, y )
+
+/**
+ * @brief Short alias for UTEST_ASSERT_STR_NOT_EQUALS
+ * @param x First string
+ * @param y Second string
+ */
 #define UTEST_ASSERT_SNEQ( x, y ) UTEST_ASSERT_STR_NOT_EQUALS( x, y )
+
+/** @} */ // end of aliases group
 
 namespace details {
 
@@ -434,13 +676,13 @@ namespace details {
     
     // Configuration for ASCII vs Unicode checkmarks
     inline bool& getUseAsciiCheckmarks() {
-        static bool useAscii = false;
+        static bool useAscii = true;  // Default to ASCII for better compatibility
         return useAscii;
     }
     
     // Configuration for showing performance information
     inline bool& getShowPerformanceInfo() {
-        static bool showPerf = false;
+        static bool showPerf = true;  // Default to showing performance info
         return showPerf;
     }
 
@@ -614,7 +856,7 @@ namespace details {
             }
         }
     }
-} // namespace
+} // namespace details
 
 #define UTEST_ASSERT_THROWS(F) utest::details::AssertThrows(F)
 
@@ -624,17 +866,236 @@ namespace details {
 
 #define UTEST_ASSERT_DOES_NOT_THROW_MSG(F, MSG) utest::details::AssertDoesNotThrow(F, std::string(MSG))
 
-// Function definition macros
-#define UTEST_FUNC_DEF(a) void test_##a()
-#define UTEST_FUNC_DEF2(a, b) void test_##a##_##b()
+/** @} */ // end of assertions group
 
-// Test function execution macros
+/**
+ * @defgroup test_execution Test Execution Macros
+ * @brief Macros for defining and running tests
+ * @{
+ */
+
+/**
+ * @brief Execute a simple test function
+ * @param a Test function name (without test_ prefix)
+ * 
+ * Executes a test function defined with UTEST_FUNC_DEF(a).
+ * The function will be called as test_##a().
+ * 
+ * @code{.cpp}
+ * UTEST_FUNC_DEF(MyTest) {
+ *     UTEST_ASSERT_TRUE(true);
+ * }
+ * 
+ * int main() {
+ *     UTEST_PROLOG();
+ *     UTEST_FUNC(MyTest);  // Calls test_MyTest()
+ *     UTEST_EPILOG();
+ * }
+ * @endcode
+ */
 #define UTEST_FUNC(a) utest::details::testFunc(#a, test_##a, errorFound)
-#define UTEST_FUNC2(a, b) utest::details::testFunc2(#a, #b, test_##a##_##b, errorFound)
 
+/**
+ * @brief Initialize the test framework
+ * 
+ * Must be called at the beginning of main() before any test execution.
+ * Initializes error tracking and clears any previous test results.
+ * 
+ * @code{.cpp}
+ * int main() {
+ *     UTEST_PROLOG();  // Always call first
+ *     // ... run tests ...
+ *     UTEST_EPILOG();
+ * }
+ * @endcode
+ */
 #define UTEST_PROLOG() bool errorFound = false; \
     utest::details::getTestResults().clear()
 
+/**
+ * @brief Allow tests to run even if no test functions are executed
+ * 
+ * By default, running zero tests is considered a failure. This macro
+ * allows empty test runs to succeed, useful for conditional testing.
+ * 
+ * @code{.cpp}
+ * int main() {
+ *     UTEST_PROLOG();
+ *     UTEST_ALLOW_EMPTY_TESTS();  // Won't fail if no tests run
+ *     // conditionally run tests...
+ *     UTEST_EPILOG();
+ * }
+ * @endcode
+ */
+#define UTEST_ALLOW_EMPTY_TESTS() utest::details::getAllowEmptyTests() = true
+
+/**
+ * @brief Enable ASCII checkmarks instead of Unicode symbols
+ * 
+ * Changes test output from ✓/✗ to [OK]/[FAIL] for better compatibility
+ * with terminals that don't support Unicode. This is enabled by default.
+ * 
+ * @code{.cpp}
+ * int main() {
+ *     UTEST_PROLOG();
+ *     UTEST_USE_ASCII_CHECKMARKS();  // Use [OK]/[FAIL]
+ *     // ... run tests ...
+ *     UTEST_EPILOG();
+ * }
+ * @endcode
+ */
+#define UTEST_USE_ASCII_CHECKMARKS() utest::details::getUseAsciiCheckmarks() = true
+
+/**
+ * @brief Enable Unicode checkmarks for test results
+ * 
+ * Changes test output from [OK]/[FAIL] to ✓/✗ for nicer formatting
+ * on terminals that support Unicode characters.
+ * 
+ * @code{.cpp}
+ * int main() {
+ *     UTEST_PROLOG();
+ *     UTEST_USE_UNICODE_CHECKMARKS();  // Use ✓/✗
+ *     // ... run tests ...
+ *     UTEST_EPILOG();
+ * }
+ * @endcode
+ */
+#define UTEST_USE_UNICODE_CHECKMARKS() utest::details::getUseAsciiCheckmarks() = false
+
+/**
+ * @brief Enable performance timing information in test output
+ * 
+ * Shows execution time for each test in milliseconds.
+ * This is enabled by default.
+ * 
+ * @code{.cpp}
+ * int main() {
+ *     UTEST_PROLOG();
+ *     UTEST_SHOW_PERFORMANCE();  // Show timing info
+ *     // ... run tests ...
+ *     UTEST_EPILOG();
+ * }
+ * @endcode
+ */
+#define UTEST_SHOW_PERFORMANCE() utest::details::getShowPerformanceInfo() = true
+
+/**
+ * @brief Disable performance timing information in test output
+ * 
+ * Hides execution time information to make output cleaner.
+ * 
+ * @code{.cpp}
+ * int main() {
+ *     UTEST_PROLOG();
+ *     UTEST_HIDE_PERFORMANCE();  // Hide timing info
+ *     // ... run tests ...
+ *     UTEST_EPILOG();
+ * }
+ * @endcode
+ */
+#define UTEST_HIDE_PERFORMANCE() utest::details::getShowPerformanceInfo() = false
+
+/** @} */ // end of test_execution group
+
+/**
+ * @defgroup test_definition Test Definition Macros
+ * @brief Macros for defining test functions
+ * @{
+ */
+
+/**
+ * @brief Define a simple test function
+ * @param a Test name
+ * 
+ * Creates a test function named test_##a() that can be executed with UTEST_FUNC(a).
+ * 
+ * @code{.cpp}
+ * UTEST_FUNC_DEF(BasicArithmetic) {
+ *     UTEST_ASSERT_EQUALS(2 + 2, 4);
+ * }
+ * 
+ * int main() {
+ *     UTEST_PROLOG();
+ *     UTEST_FUNC(BasicArithmetic);
+ *     UTEST_EPILOG();
+ * }
+ * @endcode
+ */
+#define UTEST_FUNC_DEF(a) void test_##a()
+
+/**
+ * @brief Define a grouped test function
+ * @param a Group name (e.g., class or module name)
+ * @param b Test name within the group
+ * 
+ * Creates a test function named test_##a##_##b() that can be executed with UTEST_FUNC2(a, b).
+ * Tests with the same group name will be displayed together in the test summary.
+ * 
+ * @code{.cpp}
+ * UTEST_FUNC_DEF2(Calculator, Addition) {
+ *     UTEST_ASSERT_EQUALS(calc.add(2, 3), 5);
+ * }
+ * 
+ * UTEST_FUNC_DEF2(Calculator, Subtraction) {
+ *     UTEST_ASSERT_EQUALS(calc.subtract(5, 3), 2);
+ * }
+ * 
+ * int main() {
+ *     UTEST_PROLOG();
+ *     UTEST_FUNC2(Calculator, Addition);
+ *     UTEST_FUNC2(Calculator, Subtraction);
+ *     UTEST_EPILOG();
+ * }
+ * @endcode
+ */
+#define UTEST_FUNC_DEF2(a, b) void test_##a##_##b()
+
+/** @} */ // end of test_definition group
+
+/**
+ * @defgroup test_runner Test Runner Macros
+ * @brief Macros for executing tests and managing test flow
+ * @{
+ */
+
+/**
+ * @brief Execute a grouped test function
+ * @param a Group name
+ * @param b Test name within the group
+ * 
+ * Executes a test function defined with UTEST_FUNC_DEF2(a, b).
+ * The test will be displayed as "Group::Test" in the output and grouped
+ * with other tests that have the same group name.
+ * 
+ * @code{.cpp}
+ * UTEST_FUNC2(Calculator, Addition);  // Runs test_Calculator_Addition()
+ * @endcode
+ */
+#define UTEST_FUNC2(a, b) utest::details::testFunc2(#a, #b, test_##a##_##b, errorFound)
+
+/**
+ * @brief Finalize testing and display results
+ * 
+ * Must be called at the end of main() to display test summary and return
+ * appropriate exit code. Returns EXIT_SUCCESS if all tests passed,
+ * EXIT_FAILURE if any test failed or no tests were run (unless allowed).
+ * 
+ * The summary includes:
+ * - Individual test results with checkmarks
+ * - Grouped display for UTEST_FUNC2 tests
+ * - Performance timing (if enabled)
+ * - Overall statistics
+ * - Final SUCCESS/FAILURE status
+ * 
+ * @code{.cpp}
+ * int main() {
+ *     UTEST_PROLOG();
+ *     // ... run tests ...
+ *     UTEST_EPILOG();  // Always call last, returns exit code
+ * }
+ * @endcode
+ */
 #define UTEST_EPILOG() do { \
     std::cout << "\n======================================\n"; \
     std::cout << "Test Summary:\n"; \
@@ -714,7 +1175,8 @@ namespace details {
     } \
 } while(0)
 
-} // namespace
+/** @} */ // end of test_runner group
+
+} // namespace utest
 
 #endif
-

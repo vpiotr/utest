@@ -58,3 +58,18 @@ target_include_directories(demo_ascii_checkmarks PRIVATE ${CMAKE_CURRENT_SOURCE_
 set_target_properties(demo_ascii_checkmarks PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+# Demo for Unicode checkmarks
+add_executable(demo_unicode_checkmarks
+    demo_unicode_checkmarks.cpp
+)
+
+target_link_libraries(demo_unicode_checkmarks
+    PRIVATE utest
+)
+
+target_include_directories(demo_unicode_checkmarks PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+set_target_properties(demo_unicode_checkmarks PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
