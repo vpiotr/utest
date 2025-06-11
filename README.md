@@ -110,12 +110,20 @@ The demo project demonstrates various aspects of the library:
 - Testing exceptions
 - Complex test scenarios with collections
 
-To run the demo:
+To run all demos:
 ```bash
 mkdir _build && cd _build
 cmake ..
 cmake --build .
-./bin/utest_demo
+./run_all_demos.sh
+```
+
+To run individual demos:
+```bash
+./bin/utest_demo                # Core features demo
+./bin/demo_unicode_checkmarks   # Unicode checkmarks demo
+./bin/demo_with_failure         # Failure handling demo
+./bin/demo_no_tests             # No tests scenario demo
 ```
 
 ## Test Output
@@ -179,12 +187,26 @@ make: *** [Makefile:84: test] Error 8
 - `UTEST_ASSERT_FALSE_MSG(condition, msg)` - Assert that condition is false, with custom message
 - `UTEST_ASSERT_EQUALS(a, b)` - Assert that a equals b
 - `UTEST_ASSERT_EQUALS_MSG(a, b, msg)` - Assert that a equals b, with custom message
+- `UTEST_ASSERT_NOT_EQUALS(a, b)` - Assert that a does not equal b
+- `UTEST_ASSERT_NOT_EQUALS_MSG(a, b, msg)` - Assert that a does not equal b, with custom message
+- `UTEST_ASSERT_STR_EQUALS(a, b)` - Assert that strings a and b are equal
+- `UTEST_ASSERT_STR_NOT_EQUALS(a, b)` - Assert that strings a and b are not equal
+- `UTEST_ASSERT_GT(a, b)` - Assert that a is greater than b
+- `UTEST_ASSERT_GTE(a, b)` - Assert that a is greater than or equal to b
+- `UTEST_ASSERT_LT(a, b)` - Assert that a is less than b
+- `UTEST_ASSERT_LTE(a, b)` - Assert that a is less than or equal to b
 - `UTEST_ASSERT_THROWS(F)` - Assert that function F throws an exception
 - `UTEST_ASSERT_THROWS_MSG(F, MSG)` - Assert that function F throws an exception, with custom message
 - `UTEST_ASSERT_DOES_NOT_THROW(F)` - Assert that function F does not throw an exception
 - `UTEST_ASSERT_DOES_NOT_THROW_MSG(F, MSG)` - Assert that function F does not throw an exception, with custom message
 - `UTEST_ASSERT_NULL(ptr)` - Assert that pointer ptr is null
 - `UTEST_ASSERT_NOT_NULL(ptr)` - Assert that pointer ptr is not null
+
+### Convenient Aliases
+- `UTEST_ASSERT_EQ(a, b)` - Alias for `UTEST_ASSERT_EQUALS`
+- `UTEST_ASSERT_NEQ(a, b)` - Alias for `UTEST_ASSERT_NOT_EQUALS`
+- `UTEST_ASSERT_SEQ(a, b)` - Alias for `UTEST_ASSERT_STR_EQUALS`
+- `UTEST_ASSERT_SNEQ(a, b)` - Alias for `UTEST_ASSERT_STR_NOT_EQUALS`
 
 ## Build Organization
 
