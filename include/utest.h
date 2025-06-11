@@ -62,6 +62,7 @@
  * The library can be configured using these macros in your test main():
  * - UTEST_USE_ASCII_CHECKMARKS() - Use [OK]/[FAIL] instead of checkmarks
  * - UTEST_SHOW_PERFORMANCE() - Show timing information for each test
+ * - UTEST_ENABLE_VERBOSE_MODE() - Show test names before execution
  * - UTEST_ALLOW_EMPTY_TESTS() - Don't fail if no tests are run
  * 
  * By default, ASCII checkmarks and performance timing are enabled for
@@ -685,6 +686,12 @@ namespace details {
         static bool showPerf = true;  // Default to showing performance info
         return showPerf;
     }
+    
+    // Configuration for verbose mode (showing test names before execution)
+    inline bool& getVerboseMode() {
+        static bool verbose = false;  // Default to non-verbose
+        return verbose;
+    }
 
     template<typename Func>
     void testFunc(const char *name, Func f, bool &failed) {
@@ -697,6 +704,11 @@ namespace details {
         // Get checkmark symbols
         const char* successMark = getUseAsciiCheckmarks() ? "[OK]" : "✓";
         const char* failMark = getUseAsciiCheckmarks() ? "[FAIL]" : "✗";
+        
+        // Show test name before execution if verbose mode is enabled
+        if (getVerboseMode()) {
+            std::cout << "Running test: " << std::string(name) << "\n";
+        }
         
         auto start = std::chrono::high_resolution_clock::now();
         
@@ -756,6 +768,11 @@ namespace details {
         // Get checkmark symbols
         const char* successMark = getUseAsciiCheckmarks() ? "[OK]" : "✓";
         const char* failMark = getUseAsciiCheckmarks() ? "[FAIL]" : "✗";
+        
+        // Show test name before execution if verbose mode is enabled
+        if (getVerboseMode()) {
+            std::cout << "Running test: " << std::string(group) << "::" << std::string(name) << "\n";
+        }
         
         auto start = std::chrono::high_resolution_clock::now();
         
@@ -995,6 +1012,23 @@ namespace details {
  * @endcode
  */
 #define UTEST_HIDE_PERFORMANCE() utest::details::getShowPerformanceInfo() = false
+
+/**
+ * @brief Enable verbose mode to show test names before execution
+ * 
+ * Shows the name of each test before it runs, useful for debugging
+ * and understanding test execution flow.
+ * 
+ * @code{.cpp}
+ * int main() {
+ *     UTEST_PROLOG();
+ *     UTEST_ENABLE_VERBOSE_MODE();  // Show test names before execution
+ *     // ... run tests ...
+ *     UTEST_EPILOG();
+ * }
+ * @endcode
+ */
+#define UTEST_ENABLE_VERBOSE_MODE() utest::details::getVerboseMode() = true
 
 /** @} */ // end of test_execution group
 

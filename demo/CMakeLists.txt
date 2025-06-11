@@ -58,3 +58,18 @@ target_include_directories(demo_unicode_checkmarks PRIVATE ${CMAKE_CURRENT_SOURC
 set_target_properties(demo_unicode_checkmarks PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+# Demo for verbose mode
+add_executable(demo_verbose_mode
+    demo_verbose_mode.cpp
+)
+
+target_link_libraries(demo_verbose_mode
+    PRIVATE utest
+)
+
+target_include_directories(demo_verbose_mode PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+set_target_properties(demo_verbose_mode PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)

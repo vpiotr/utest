@@ -175,6 +175,7 @@ make: *** [Makefile:84: test] Error 8
 - `UTEST_ALLOW_EMPTY_TESTS()` - Allow test runner to succeed even when no tests are run
 - `UTEST_USE_ASCII_CHECKMARKS()` - Use ASCII [OK]/[FAIL] instead of Unicode ✓/✗
 - `UTEST_SHOW_PERFORMANCE()` - Enable performance timing for each test
+- `UTEST_ENABLE_VERBOSE_MODE()` - Show test names before execution (useful for debugging)
 
 ### Function Definition Macros
 - `UTEST_FUNC_DEF(name)` - Define a test function: `void test_name()`
@@ -271,6 +272,28 @@ UTEST_EPILOG();
 Output will show timing information:
 ```
 ✓ Test [my_test] succeeded (1.234ms)
+```
+
+### Verbose Mode
+Enable verbose mode to see test names before execution:
+
+```cpp
+UTEST_PROLOG();
+UTEST_ENABLE_VERBOSE_MODE(); // Show test names before execution
+UTEST_FUNC(my_test);
+UTEST_EPILOG();
+```
+
+Output will show test names before execution:
+```
+Running test: my_test
+✓ Test [my_test] succeeded (1.234ms)
+```
+
+For grouped tests:
+```
+Running test: GroupName::TestName
+✓ Test [GroupName::TestName] succeeded (1.234ms)
 ```
 
 ### ASCII Checkmarks
