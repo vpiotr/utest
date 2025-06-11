@@ -22,6 +22,6 @@ int main() {
     std::cout << "No tests registered or executed.\n\n";
     
     std::cout << "Test summary:\n";
-    // This should now succeed because we called UTEST_ALLOW_EMPTY_TESTS()
+    // This should now fail
     UTEST_EPILOG();
 }

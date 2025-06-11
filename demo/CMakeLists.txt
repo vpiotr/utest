@@ -43,3 +43,18 @@ target_include_directories(demo_no_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../
 set_target_properties(demo_no_tests PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+# Demo for ASCII checkmarks and performance
+add_executable(demo_ascii_checkmarks
+    demo_ascii_checkmarks.cpp
+)
+
+target_link_libraries(demo_ascii_checkmarks
+    PRIVATE utest
+)
+
+target_include_directories(demo_ascii_checkmarks PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+set_target_properties(demo_ascii_checkmarks PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)

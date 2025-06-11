@@ -157,10 +157,22 @@ make: *** [Makefile:84: test] Error 8
 
 ## Available macros
 
+### Core Macros
 - `UTEST_PROLOG()` - Initialize the test framework
 - `UTEST_EPILOG()` - Finalize and report test results
 - `UTEST_FUNC(name)` - Run a test function (function should be named `test_name`)
+- `UTEST_FUNC2(group, name)` - Run a grouped test function (function should be named `test_group_name`)
+
+### Configuration Macros
 - `UTEST_ALLOW_EMPTY_TESTS()` - Allow test runner to succeed even when no tests are run
+- `UTEST_USE_ASCII_CHECKMARKS()` - Use ASCII [OK]/[FAIL] instead of Unicode ✓/✗
+- `UTEST_SHOW_PERFORMANCE()` - Enable performance timing for each test
+
+### Function Definition Macros
+- `UTEST_FUNC_DEF(name)` - Define a test function: `void test_name()`
+- `UTEST_FUNC_DEF2(group, name)` - Define a grouped test function: `void test_group_name()`
+
+### Assertion Macros
 - `UTEST_ASSERT_TRUE(condition)` - Assert that condition is true
 - `UTEST_ASSERT_TRUE_MSG(condition, msg)` - Assert that condition is true, with custom message
 - `UTEST_ASSERT_FALSE(condition)` - Assert that condition is false
@@ -196,6 +208,79 @@ This is useful for:
 - Conditional test execution
 - Test suites that may be empty under certain conditions
 - Template-based test generation where some configurations may produce no tests
+
+## New Features
+
+### Test Grouping
+Tests can be organized into groups using `UTEST_FUNC_DEF2` and `UTEST_FUNC2`:
+
+```cpp
+// Define grouped test functions
+UTEST_FUNC_DEF2(ModuleA, Feature1) {
+    UTEST_ASSERT_TRUE(some_condition);
+}
+
+UTEST_FUNC_DEF2(ModuleA, Feature2) {
+    UTEST_ASSERT_EQUALS(calculate(), expected);
+}
+
+// Run grouped tests
+UTEST_FUNC2(ModuleA, Feature1);
+UTEST_FUNC2(ModuleA, Feature2);
+```
+
+In the test summary, tests with the same group name will be displayed together:
+```
+ModuleA:
+✓ Feature1
+✓ Feature2
+```
+
+### Performance Timing
+Enable performance timing to see how long each test takes:
+
+```cpp
+UTEST_PROLOG();
+UTEST_SHOW_PERFORMANCE(); // Enable timing
+UTEST_FUNC(my_test);
+UTEST_EPILOG();
+```
+
+Output will show timing information:
+```
+✓ Test [my_test] succeeded (1.234ms)
+```
+
+### ASCII Checkmarks
+For environments that don't support Unicode characters:
+
+```cpp
+UTEST_PROLOG();
+UTEST_USE_ASCII_CHECKMARKS(); // Use [OK]/[FAIL] instead of ✓/✗
+UTEST_FUNC(my_test);
+UTEST_EPILOG();
+```
+
+### String and Lambda Testing
+The library now supports comprehensive string testing and modern C++ features:
+
+```cpp
+// String testing with std::string and const char*
+void test_strings() {
+    std::string str = "hello";
+    UTEST_ASSERT_EQUALS(str, "hello");
+    UTEST_ASSERT_EQUALS("world", "world");
+}
+
+// Lambda and functor testing
+void test_lambdas() {
+    auto throwing_lambda = []() { throw std::exception(); };
+    UTEST_ASSERT_THROWS(throwing_lambda);
+    
+    auto safe_lambda = []() { return 42; };
+    UTEST_ASSERT_DOES_NOT_THROW(safe_lambda);
+}
+```
 
 # License
 See LICENSE.txt

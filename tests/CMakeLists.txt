@@ -55,18 +55,18 @@ set_target_properties(test_enhanced_features PROPERTIES
 
 ADD_TEST(test_enhanced_features, ${CMAKE_BINARY_DIR}/bin/tests/test_enhanced_features)
 
-# Todo verification test
-add_executable(test_todo_verification
+# New features comprehensive test
+add_executable(test_new_features
         ../include/utest.h
-        test_todo_verification.cpp)
+        test_new_features.cpp)
 
-target_include_directories(test_todo_verification PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+target_include_directories(test_new_features PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
-set_target_properties(test_todo_verification PROPERTIES
+set_target_properties(test_new_features PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
 )
 
-ADD_TEST(test_todo_verification, ${CMAKE_BINARY_DIR}/bin/tests/test_todo_verification)
+ADD_TEST(test_new_features, ${CMAKE_BINARY_DIR}/bin/tests/test_new_features)
 
 # No tests scenario test (should fail by design)
 add_executable(test_no_tests
