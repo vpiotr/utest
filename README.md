@@ -1,4 +1,9 @@
 # Overview
+
+[![Build Status](https://github.com/vpiotr/utest/actions/workflows/ci.yml/badge.svg)](https://github.com/vpiotr/utest/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/vpiotr/utest)](https://github.com/vpiotr/utest/blob/main/LICENSE.txt)
+[![C++11](https://img.shields.io/badge/C%2B%2B-11-blue.svg)](https://isocpp.org/std/the-standard)
+
 Micro (header-only) library for unit testing.
 
 Library author: Piotr Likus
