@@ -14,7 +14,9 @@ set_target_properties(test_core_features PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
 )
 
-ADD_TEST(test_core_features, ${CMAKE_BINARY_DIR}/bin/tests/test_core_features)
+# Use generator expression to handle .exe extension on Windows
+add_test(NAME test_core_features 
+         COMMAND $<TARGET_FILE:test_core_features>)
 
 # Comprehensive features test
 add_executable(test_comprehensive_features
@@ -27,7 +29,8 @@ set_target_properties(test_comprehensive_features PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
 )
 
-ADD_TEST(test_comprehensive_features, ${CMAKE_BINARY_DIR}/bin/tests/test_comprehensive_features)
+add_test(NAME test_comprehensive_features 
+         COMMAND $<TARGET_FILE:test_comprehensive_features>)
 
 # Edge cases test
 add_executable(test_edge_cases
@@ -40,7 +43,8 @@ set_target_properties(test_edge_cases PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
 )
 
-ADD_TEST(test_edge_cases, ${CMAKE_BINARY_DIR}/bin/tests/test_edge_cases)
+add_test(NAME test_edge_cases 
+         COMMAND $<TARGET_FILE:test_edge_cases>)
 
 # Enhanced features test
 add_executable(test_enhanced_features
@@ -53,7 +57,8 @@ set_target_properties(test_enhanced_features PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
 )
 
-ADD_TEST(test_enhanced_features, ${CMAKE_BINARY_DIR}/bin/tests/test_enhanced_features)
+add_test(NAME test_enhanced_features 
+         COMMAND $<TARGET_FILE:test_enhanced_features>)
 
 # New features comprehensive test
 add_executable(test_new_features
@@ -66,7 +71,9 @@ set_target_properties(test_new_features PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
 )
 
-ADD_TEST(test_new_features, ${CMAKE_BINARY_DIR}/bin/tests/test_new_features)
+# Use generator expression to handle .exe extension on Windows
+add_test(NAME test_new_features 
+         COMMAND $<TARGET_FILE:test_new_features>)
 
 # No tests scenario test (should fail by design)
 add_executable(test_no_tests
