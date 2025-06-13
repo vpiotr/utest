@@ -87,3 +87,18 @@ set_target_properties(test_no_tests PROPERTIES
 )
 
 # Note: test_no_tests is expected to fail, so we don't add it to CTest
+
+# String contains test
+add_executable(test_string_contains
+        ../include/utest.h
+        test_string_contains.cpp)
+
+target_include_directories(test_string_contains PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+set_target_properties(test_string_contains PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
+)
+
+# Use generator expression to handle .exe extension on Windows
+add_test(NAME test_string_contains 
+         COMMAND $<TARGET_FILE:test_string_contains>)

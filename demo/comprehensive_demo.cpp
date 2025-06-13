@@ -36,6 +36,19 @@ void test_string_assertions() {
     
     UTEST_ASSERT_STR_EQUALS(s1, s2);
     UTEST_ASSERT_STR_NOT_EQUALS(s1, s3);
+    
+    // String contains assertions
+    std::string message = "Hello, world! This is a test message.";
+    UTEST_ASSERT_STR_CONTAINS(message, "world");
+    UTEST_ASSERT_SC(message, "test");  // Alias
+    
+    // String not contains assertions
+    UTEST_ASSERT_STR_NOT_CONTAINS(message, "error");
+    UTEST_ASSERT_SNC(message, "failure");  // Alias
+    
+    // With custom messages
+    UTEST_ASSERT_STR_CONTAINS_MSG(message, "Hello", "Message should start with greeting");
+    UTEST_ASSERT_STR_NOT_CONTAINS_MSG(message, "goodbye", "Message should not contain farewells");
 }
 
 // Test comparison assertions
