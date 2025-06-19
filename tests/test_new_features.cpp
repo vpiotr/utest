@@ -10,18 +10,18 @@ void test_string_equality() {
     std::string str2 = "hello";
     UTEST_ASSERT_EQUALS(str1, str2);
     
-    // Test with const char*
+    // Test with const char* - use STR_EQUALS for string content comparison
     const char* cstr1 = "world";
     const char* cstr2 = "world";
-    UTEST_ASSERT_EQUALS(cstr1, cstr2);
+    UTEST_ASSERT_STR_EQUALS(cstr1, cstr2);
     
-    // Test mixed std::string and const char*
+    // Test mixed std::string and const char* - use STR_EQUALS
     std::string str3 = "test";
     const char* cstr3 = "test";
-    UTEST_ASSERT_EQUALS(str3, cstr3);
+    UTEST_ASSERT_STR_EQUALS(str3, cstr3);
     
-    // Test with string literals
-    UTEST_ASSERT_EQUALS("literal1", "literal1");
+    // Test with string literals - use STR_EQUALS for proper string comparison
+    UTEST_ASSERT_STR_EQUALS("literal1", "literal1");
 }
 
 // Test throwing with functors and lambdas
@@ -69,7 +69,7 @@ UTEST_FUNC_DEF(SingleParamTest) {
 
 UTEST_FUNC_DEF(AnotherSingleTest) {
     std::string result = "success";
-    UTEST_ASSERT_EQUALS(result, "success");
+    UTEST_ASSERT_STR_EQUALS(result, "success");
 }
 
 // Test two parameter UTEST_FUNC_DEF2

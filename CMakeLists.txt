@@ -5,6 +5,27 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Enable comprehensive warning flags to match Windows behavior
+if(MSVC)
+    # Windows (MSVC) - Enable most warnings including conversion warnings
+    add_compile_options(/W4 /WX- /wd4996)
+else()
+    # Linux/GCC or Clang - Enable comprehensive warnings including conversion warnings
+    add_compile_options(
+        -Wall                    # Enable most warnings
+        -Wextra                  # Enable extra warnings
+        -Wconversion             # Warn about type conversions that may alter values
+        -Wsign-conversion        # Warn about sign conversions
+        -Wfloat-conversion       # Warn about float conversions
+        -Wcast-qual              # Warn about casts that remove qualifiers
+        -Wcast-align             # Warn about casts that increase alignment requirements
+        -Wshadow                 # Warn about variable shadowing
+        -Wpedantic               # Warn about non-standard C++
+        -Wunused                 # Warn about unused variables/functions
+        -Wuninitialized          # Warn about uninitialized variables
+    )
+endif()
+
 # Set output directories for binaries
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

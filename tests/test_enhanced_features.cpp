@@ -134,6 +134,7 @@ void test_convert_to_string() {
     float floatVal = 2.71f;
     
     UTEST_ASSERT_STR_EQUALS(UTEST_TO_STRING(intVal), "42");
+    UTEST_ASSERT_STR_EQUALS(UTEST_TO_STRING(doubleVal), "3.141590");
     UTEST_ASSERT_STR_EQUALS(UTEST_TO_STRING(floatVal), "2.710000");
     
     // Test bool (should use custom conversion)

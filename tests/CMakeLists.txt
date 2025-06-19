@@ -102,3 +102,18 @@ set_target_properties(test_string_contains PROPERTIES
 # Use generator expression to handle .exe extension on Windows
 add_test(NAME test_string_contains 
          COMMAND $<TARGET_FILE:test_string_contains>)
+
+# Equals macros test
+add_executable(test_equals_macros
+        ../include/utest.h
+        test_equals_macros.cpp)
+
+target_include_directories(test_equals_macros PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+set_target_properties(test_equals_macros PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
+)
+
+# Use generator expression to handle .exe extension on Windows
+add_test(NAME test_equals_macros 
+         COMMAND $<TARGET_FILE:test_equals_macros>)
