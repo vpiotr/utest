@@ -18,7 +18,7 @@ echo
 # Check if demos are built
 if [ ! -d "build/bin" ]; then
     echo -e "${RED}Error: build/bin directory not found!${NC}"
-    echo "Please build the project first with: mkdir -p build && cd build && cmake .. && make"
+    echo "Please build the project first with: ./rebuild.sh"
     exit 1
 fi
 

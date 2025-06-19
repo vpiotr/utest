@@ -1,34 +1,36 @@
 #!/bin/bash
 
 # Test runner script for utest library
-# Compiles and runs all test*.cpp files in tests/ directory
+# Runs all pre-built test binaries from the build directory
 
 echo "========================================"
 echo "Running all utest library tests"
 echo "========================================"
 
 # Set up variables
-TEST_DIR="tests"
-INCLUDE_DIR="include"
+BUILD_DIR="build/bin/tests"
 FAILED_TESTS=0
 TOTAL_TESTS=0
 PASS_COUNT=0
 
+# Check if tests are built
+if [ ! -d "$BUILD_DIR" ]; then
+    echo "Error: $BUILD_DIR directory not found!"
+    echo "Please build the project first with: ./rebuild.sh"
+    exit 1
+fi
+
 # Function to run a single test
 run_test() {
-    local test_file="$1"
-    local test_name=$(basename "$test_file" .cpp)
-    local test_exec="$TEST_DIR/$test_name"
+    local test_exec="$1"
+    local test_name=$(basename "$test_exec")
     
     echo ""
     echo "========================================="
-    echo "Compiling and running: $test_name"
+    echo "Running: $test_name"
     echo "========================================="
     
-    # Compile the test
-    if g++ -std=c++11 -I "$INCLUDE_DIR" "$test_file" -o "$test_exec" 2>/dev/null; then
-        echo "✓ Compilation successful"
-        
+    if [ -f "$test_exec" ]; then
         # Run the test and capture exit code
         if "$test_exec" > /dev/null 2>&1; then
             local exit_code=$?
@@ -46,38 +48,28 @@ run_test() {
             fi
         fi
     else
-        echo "✗ Compilation failed"
+        echo "✗ Test executable not found: $test_exec"
         ((FAILED_TESTS++))
     fi
     
     ((TOTAL_TESTS++))
-    
-    # Clean up executable
-    if [ -f "$test_exec" ]; then
-        rm "$test_exec"
-    fi
 }
 
 # Function to run detailed test output
 run_test_detailed() {
-    local test_file="$1"
-    local test_name=$(basename "$test_file" .cpp)
-    local test_exec="$TEST_DIR/$test_name"
+    local test_exec="$1"
+    local test_name=$(basename "$test_exec")
     
     echo ""
     echo "========================================="
     echo "Running detailed output for: $test_name"
     echo "========================================="
     
-    # Compile the test
-    if g++ -std=c++11 -I "$INCLUDE_DIR" "$test_file" -o "$test_exec" 2>/dev/null; then
+    if [ -f "$test_exec" ]; then
         # Run the test with full output
         "$test_exec" || true
-    fi
-    
-    # Clean up executable
-    if [ -f "$test_exec" ]; then
-        rm "$test_exec"
+    else
+        echo "✗ Test executable not found: $test_exec"
     fi
 }
 
@@ -88,17 +80,17 @@ cd "$(dirname "$0")"
 if [[ "$1" == "--detailed" ]] || [[ "$1" == "-d" ]]; then
     echo "Running in detailed mode..."
     
-    # Find and run all test*.cpp files with detailed output
-    for test_file in "$TEST_DIR"/test*.cpp; do
-        if [ -f "$test_file" ]; then
-            run_test_detailed "$test_file"
+    # Find and run all test executables with detailed output
+    for test_exec in "$BUILD_DIR"/test*; do
+        if [ -f "$test_exec" ]; then
+            run_test_detailed "$test_exec"
         fi
     done
 else
-    # Find and run all test*.cpp files
-    for test_file in "$TEST_DIR"/test*.cpp; do
-        if [ -f "$test_file" ]; then
-            run_test "$test_file"
+    # Find and run all test executables
+    for test_exec in "$BUILD_DIR"/test*; do
+        if [ -f "$test_exec" ]; then
+            run_test "$test_exec"
         fi
     done
 
