@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(utest)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 
 # Core features test
 add_executable(test_core_features

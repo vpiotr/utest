@@ -14,7 +14,19 @@ Initial code based on blog post by Bastian Rieck,
 see: https://bastian.rieck.me/blog/posts/2017/simple_unit_tests/
 
 # Requirements
-This library requires at least C++11 and has been tested on Linux Mint 20.
+This library requires **C++11** or later and has been tested on Linux Mint 20 and other modern Linux distributions.
+
+**Key C++11 features used:**
+- Lambda expressions
+- `auto` keyword for type deduction  
+- Uniform initialization syntax (`{}`)
+- `std::enable_if` for SFINAE
+- `std::chrono` for timing
+- `nullptr` and `std::nullptr_t`
+- `static_assert` for compile-time checks
+- `decltype` for type deduction
+
+The library is fully compatible with C++11, C++14, C++17, and C++20 standards.
  
 # Project home
 https://github.com/vpiotr/utest
@@ -57,6 +69,24 @@ cmake -DUTEST_BUILD_DEMO=OFF -DUTEST_BUILD_TESTS=ON ..
 ```
 
 # Integration
+
+## C++11 Compatibility
+
+This library is fully compatible with C++11 and later standards. To use it in your project, ensure your compiler supports C++11:
+
+```cmake
+# In your CMakeLists.txt
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+```
+
+Or with compiler flags:
+```bash
+g++ -std=c++11 your_tests.cpp
+clang++ -std=c++11 your_tests.cpp
+```
+
+The library leverages modern C++11 features for clean, expressive test code while maintaining compatibility with older codebases.
 
 ## Method 1: Direct inclusion
 
@@ -331,6 +361,26 @@ void test_lambdas() {
     UTEST_ASSERT_DOES_NOT_THROW(safe_lambda);
 }
 ```
+
+## Compatibility Notes
+
+### C++11 Features Used
+The library takes advantage of several C++11 features to provide clean, modern syntax:
+
+- **Lambda expressions**: For exception testing and complex test scenarios
+- **Auto keyword**: For type deduction in test code
+- **Uniform initialization**: For cleaner object construction
+- **std::chrono**: For high-precision timing measurements
+- **nullptr**: For safe null pointer testing
+- **static_assert**: For compile-time type checking
+- **SFINAE with decltype**: For template metaprogramming
+
+### Compiler Support
+Tested with:
+- GCC 4.8+ (C++11 support)
+- Clang 3.3+ (C++11 support)  
+- MSVC 2013+ (C++11 support)
+- Any compiler with full C++11 support
 
 # License
 See LICENSE.txt
